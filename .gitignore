@@ -21,3 +21,7 @@ Thumbs.db
 # If you add a frontend later with node_modules
 node_modules/
 
+# Test scripts and local test files
+test/
+tests/
+
