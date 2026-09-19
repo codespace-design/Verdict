@@ -267,4 +267,8 @@ Verdict avoids generic AI dashboard clichés in favor of a bespoke **Editorial D
 - **Typography:** Display serif (`Fraunces`) for editorial authority, modern sans (`Source Sans 3`) for dense readability, and technical mono (`IBM Plex Mono`) for telemetry data and CVE IDs.
 - **Visuals:** Crisp monochrome vector SVGs — zero cartoon emojis or generic SaaS shadows.
 
+---
 
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more details.
