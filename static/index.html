@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verdict</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EAE7DE;
+    --paper-raised: #F2F0E8;
+    --ink: #211E1A;
+    --ink-soft: #5A554C;
+    --rule: #C9C2AF;
+    --oxblood: #7A2E2E;
+    --moss: #3F5A42;
+    --amber: #96650F;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Sans 3', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+
+  header {
+    margin-bottom: 28px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    font-size: 2.4rem;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .tagline {
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+    margin: 0;
+  }
+
+  /* Catalog Dropdown at the Top */
+  .catalog-container {
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .catalog-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--paper-raised);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .catalog-toggle:hover {
+    background: #E6E2D5;
+    border-color: var(--ink);
+  }
+
+  .catalog-toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .catalog-icon {
+    font-size: 1.05rem;
+  }
+
+  .catalog-title {
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--ink);
+  }
+
+  .catalog-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    padding: 2px 7px;
+    background: rgba(33, 30, 26, 0.07);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    color: var(--ink-soft);
+  }
+
+  .catalog-toggle-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+
+  .catalog-toggle .arrow {
+    transition: transform 0.2s ease;
+    font-size: 0.75rem;
+  }
+
+  .catalog-toggle.open .arrow {
+    transform: rotate(180deg);
+  }
+
+  .catalog-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(33, 30, 26, 0.12);
+  }
+
+  .catalog-menu.open {
+    display: block;
+    animation: rise 0.2s ease-out;
+  }
+
+  .catalog-filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule);
+    background: #E8E4D7;
+  }
+
+  .catalog-filter-bar input {
+    flex: 1;
+    padding: 8px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    color: var(--ink);
+  }
+
+  .catalog-filter-bar input:focus {
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
+  }
+
+  .catalog-filter-bar input::placeholder {
+    color: #948E80;
+  }
+
+  .catalog-count-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+
+  .catalog-items-scroll {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .catalog-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--rule);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+
+  .catalog-item:last-child {
+    border-bottom: none;
+  }
+
+  .catalog-item:hover {
+    background: #E5E0D2;
+  }
+
+  .catalog-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+
+  .catalog-cve {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--ink);
+  }
+
+  .catalog-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    padding: 2px 7px;
+    border-radius: 2px;
+    border: 1px solid var(--rule);
+    color: var(--ink-soft);
+  }
+
+  .catalog-tag.discrepancy {
+    color: var(--oxblood);
+    border-color: rgba(122, 46, 46, 0.35);
+    background: rgba(122, 46, 46, 0.05);
+    font-weight: 600;
+  }
+
+  .catalog-tag.control {
+    color: var(--moss);
+    border-color: rgba(63, 90, 66, 0.35);
+    background: rgba(63, 90, 66, 0.05);
+    font-weight: 600;
+  }
+
+  .catalog-tag.adversarial {
+    color: var(--amber);
+    border-color: rgba(150, 101, 15, 0.35);
+    background: rgba(150, 101, 15, 0.05);
+    font-weight: 600;
+  }
+
+  .catalog-tag.zeroday {
+    color: #8B2500;
+    border-color: rgba(139, 37, 0, 0.35);
+    background: rgba(139, 37, 0, 0.05);
+    font-weight: 600;
+  }
+
+  .catalog-name {
+    font-size: 0.94rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+
+  .catalog-note {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  .catalog-no-results {
+    padding: 24px;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    display: none;
+  }
+
+  /* Search Input & Action Button */
+  .intake {
+    display: flex;
+    gap: 10px;
+    margin: 0 0 12px;
+  }
+
+  .intake input {
+    flex: 1;
+    padding: 13px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.95rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    color: var(--ink);
+  }
+
+  .intake input:focus {
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
+  }
+
+  .intake input::placeholder { color: #948E80; }
+
+  button.submit-btn {
+    padding: 13px 22px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  button.submit-btn:disabled { opacity: 0.5; cursor: default; }
+  button.submit-btn:not(:disabled):hover { background: #3a352e; }
+
+  .hint {
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    margin-top: 4px;
+    margin-bottom: 32px;
+  }
+
+  .status-line {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    min-height: 1.2em;
+    margin-bottom: 8px;
+  }
+
+  .report {
+    display: none;
+  }
+
+  .report.visible {
+    display: block;
+    animation: rise 0.4s ease-out;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .case-id {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+
+  .report h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    font-size: 1.6rem;
+    margin: 0 0 16px;
+  }
+
+  .stamp-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 14px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 24px;
+  }
+
+  .stamp {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    padding: 3px 9px;
+    border: 1.5px solid currentColor;
+    border-radius: 2px;
+  }
+
+  .stamp.critical { color: var(--oxblood); }
+  .stamp.high { color: var(--oxblood); }
+  .stamp.medium { color: var(--amber); }
+  .stamp.low, .stamp.unknown { color: var(--ink-soft); }
+
+  .exploit-status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+
+  .cvss {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+
+  .disagreement {
+    border-left: 3px solid var(--oxblood);
+    background: rgba(122, 46, 46, 0.06);
+    padding: 14px 16px;
+    margin-bottom: 28px;
+  }
+
+  .disagreement .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--oxblood);
+    margin-bottom: 6px;
+  }
+
+  .disagreement p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  section.block {
+    margin-bottom: 28px;
+  }
+
+  section.block h3 {
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    text-transform: none;
+    margin: 0 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  section.block p {
+    margin: 0;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 560px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  .citations ol {
+    margin: 0;
+    padding-left: 22px;
+  }
+
+  .citations li {
+    margin-bottom: 12px;
+    font-size: 0.92rem;
+  }
+
+  .citations a {
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .citations a:hover { border-bottom-color: var(--ink); }
+
+  .citations .evidence {
+    color: var(--ink-soft);
+    font-size: 0.88rem;
+    margin-top: 2px;
+  }
+
+  .error-box {
+    display: none;
+    border-left: 3px solid var(--oxblood);
+    background: rgba(122, 46, 46, 0.06);
+    padding: 14px 16px;
+    font-size: 0.92rem;
+  }
+
+  .error-box.visible { display: block; }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <h1>Verdict</h1>
+    <p class="tagline">Vulnerability risk, cross-checked against live sources — not a static score.</p>
+  </header>
+
+  <!-- Top Detailed Incident Catalog Dropdown -->
+  <div class="catalog-container">
+    <button type="button" class="catalog-toggle" id="catalogToggle" aria-expanded="false">
+      <div class="catalog-toggle-left">
+        <span class="catalog-icon">📁</span>
+        <span class="catalog-title">Browse Incident Dossier Catalog</span>
+        <span class="catalog-badge">25 Curated Cases</span>
+      </div>
+      <div class="catalog-toggle-right">
+        <span class="catalog-action-text">Click to open list</span>
+        <span class="arrow">▼</span>
+      </div>
+    </button>
+
+    <div class="catalog-menu" id="catalogMenu">
+      <div class="catalog-filter-bar">
+        <input type="text" id="catalogFilterInput" placeholder="Filter by CVE ID, technology, or tag..." autocomplete="off">
+        <span class="catalog-count-label" id="catalogCountLabel">Showing 25 cases</span>
+      </div>
+
+      <div class="catalog-items-scroll" id="catalogItemsList">
+        
+        <!-- 1. Log4j -->
+        <div class="catalog-item" data-query="CVE-2021-44228">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2021-44228</span>
+            <span class="catalog-tag discrepancy">Patch Discrepancy</span>
+          </div>
+          <div class="catalog-name">Apache Log4j 2 ("Log4Shell")</div>
+          <div class="catalog-note">Initial 2.15.0 vendor fix was incomplete and bypassed by researchers; required 2.16.0+ to fully remediate.</div>
+        </div>
+
+        <!-- 2. Tomcat 2026 -->
+        <div class="catalog-item" data-query="CVE-2026-34486">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2026-34486</span>
+            <span class="catalog-tag discrepancy">Regression Discrepancy</span>
+          </div>
+          <div class="catalog-name">Apache Tomcat EncryptInterceptor</div>
+          <div class="catalog-note">Fresh August 2026 flaw bypassing prior CVE-2026-29146 fix; active CISA KEV weaponization with public PoCs.</div>
+        </div>
+
+        <!-- 3. Langflow AI -->
+        <div class="catalog-item" data-query="CVE-2026-9198">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2026-9198</span>
+            <span class="catalog-tag control">AI Framework Flaw</span>
+          </div>
+          <div class="catalog-name">IBM Langflow OSS Agentic AI Platform</div>
+          <div class="catalog-note">Superuser token minting via /api/v1/auto_login; vendor disclosure and live threat reporting align.</div>
+        </div>
+
+        <!-- 4. SolarWinds -->
+        <div class="catalog-item" data-query="CVE-2026-28318">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2026-28318</span>
+            <span class="catalog-tag control">Aligned Control</span>
+          </div>
+          <div class="catalog-name">SolarWinds Serv-U Remote Kill Switch</div>
+          <div class="catalog-note">Unauthenticated single-request DoS crash; vendor disclosure aligns with CISA KEV news without contradiction.</div>
+        </div>
+
+        <!-- 5. XZ Utils -->
+        <div class="catalog-item" data-query="CVE-2024-3094">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2024-3094</span>
+            <span class="catalog-tag discrepancy">Supply Chain Backdoor</span>
+          </div>
+          <div class="catalog-name">XZ Utils / liblzma Upstream Compromise</div>
+          <div class="catalog-note">Multi-year sleeper supply chain backdoor targeting OpenSSH server authentication in glibc Linux distributions.</div>
+        </div>
+
+        <!-- 6. OpenSSH regreSSHion -->
+        <div class="catalog-item" data-query="CVE-2024-6387">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2024-6387</span>
+            <span class="catalog-tag discrepancy">Signal Race RCE</span>
+          </div>
+          <div class="catalog-name">OpenSSH Server ("regreSSHion")</div>
+          <div class="catalog-note">Signal handler race condition in sshd port 22 regaining unauthenticated root execution on Linux.</div>
+        </div>
+
+        <!-- 7. MOVEit -->
+        <div class="catalog-item" data-query="CVE-2023-34362">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2023-34362</span>
+            <span class="catalog-tag zeroday">Ransomware 0-Day</span>
+          </div>
+          <div class="catalog-name">Progress MOVEit Transfer SQL Injection</div>
+          <div class="catalog-note">Pre-auth SQL injection weaponized by CL0P ransomware group in worldwide corporate data theft and extortion.</div>
+        </div>
+
+        <!-- 8. Chrome libwebp -->
+        <div class="catalog-item" data-query="CVE-2023-4863">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2023-4863</span>
+            <span class="catalog-tag zeroday">In-The-Wild 0-Day</span>
+          </div>
+          <div class="catalog-name">Google Chrome & libwebp Heap Buffer Overflow</div>
+          <div class="catalog-note">Actively exploited zero-day in WebP lossless decoding abused in targeted commercial spyware campaigns.</div>
+        </div>
+
+        <!-- 9. Outlook MonikerLink -->
+        <div class="catalog-item" data-query="CVE-2024-21413">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2024-21413</span>
+            <span class="catalog-tag discrepancy">Protocol Bypass</span>
+          </div>
+          <div class="catalog-name">Microsoft Outlook "MonikerLink" Flaw</div>
+          <div class="catalog-note">Protected View bypass leaking local NTLM credentials over SMB simply upon viewing a malicious hyperlink.</div>
+        </div>
+
+        <!-- 10. FortiOS XORtigate -->
+        <div class="catalog-item" data-query="CVE-2023-27997">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2023-27997</span>
+            <span class="catalog-tag zeroday">SSL-VPN Pre-Auth RCE</span>
+          </div>
+          <div class="catalog-name">Fortinet FortiOS "XORtigate"</div>
+          <div class="catalog-note">Critical pre-authentication heap overflow in FortiGate SSL-VPN portal actively exploited prior to patch release.</div>
+        </div>
+
+        <!-- 11. Ivanti Connect Secure -->
+        <div class="catalog-item" data-query="CVE-2024-21887">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2024-21887</span>
+            <span class="catalog-tag zeroday">Gateway RCE</span>
+          </div>
+          <div class="catalog-name">Ivanti Connect Secure Command Injection</div>
+          <div class="catalog-note">Critical command injection chained with auth bypass (CVE-2023-46805) by state actors targeting perimeter VPNs.</div>
+        </div>
+
+        <!-- 12. Spring4Shell -->
+        <div class="catalog-item" data-query="CVE-2022-22965">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2022-22965</span>
+            <span class="catalog-tag discrepancy">Framework RCE</span>
+          </div>
+          <div class="catalog-name">Spring Framework ("Spring4Shell")</div>
+          <div class="catalog-note">Remote code execution via class loader manipulation in Spring MVC applications deployed as WAR on Apache Tomcat.</div>
+        </div>
+
+        <!-- 13. ScreenConnect -->
+        <div class="catalog-item" data-query="CVE-2024-1709">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2024-1709</span>
+            <span class="catalog-tag zeroday">Pre-Auth Admin Bypass</span>
+          </div>
+          <div class="catalog-name">ConnectWise ScreenConnect ("SlashAndGrab")</div>
+          <div class="catalog-note">Trivial path bypass of /SetupWizard.aspx allowing unauthorized creation of root administrator accounts.</div>
+        </div>
+
+        <!-- 14. WinRAR -->
+        <div class="catalog-item" data-query="CVE-2023-38831">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2023-38831</span>
+            <span class="catalog-tag zeroday">Zero-Day Exploited</span>
+          </div>
+          <div class="catalog-name">WinRAR ZIP Processing Code Execution</div>
+          <div class="catalog-note">Zero-day exploited by cybercriminals distributing weaponized ZIP files masquerading as benign PNG/PDF attachments.</div>
+        </div>
+
+        <!-- 15. Cisco IOS XE -->
+        <div class="catalog-item" data-query="CVE-2023-20198">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2023-20198</span>
+            <span class="catalog-tag zeroday">Zero-Day Implant</span>
+          </div>
+          <div class="catalog-name">Cisco IOS XE Web UI Privilege Escalation</div>
+          <div class="catalog-note">Mass in-the-wild zero-day campaign deploying malicious Lua implants across thousands of internet-facing routers.</div>
+        </div>
+
+        <!-- 16. Outlook Zero-Click -->
+        <div class="catalog-item" data-query="CVE-2023-23397">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2023-23397</span>
+            <span class="catalog-tag zeroday">Zero-Click Exploit</span>
+          </div>
+          <div class="catalog-name">Microsoft Outlook Elevation of Privilege</div>
+          <div class="catalog-note">Zero-click flaw triggering outbound SMB connection and NTLM negotiation immediately upon receiving a meeting reminder.</div>
+        </div>
+
+        <!-- 17. PrintNightmare -->
+        <div class="catalog-item" data-query="CVE-2021-34527">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2021-34527</span>
+            <span class="catalog-tag discrepancy">Patch Discrepancy</span>
+          </div>
+          <div class="catalog-name">Microsoft Windows Print Spooler ("PrintNightmare")</div>
+          <div class="catalog-note">Vendor's initial out-of-band security patch failed to remediate the flaw, leading to immediate public bypasses.</div>
+        </div>
+
+        <!-- 18. ProxyLogon -->
+        <div class="catalog-item" data-query="CVE-2021-26855">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2021-26855</span>
+            <span class="catalog-tag zeroday">Exchange SSRF RCE</span>
+          </div>
+          <div class="catalog-name">Microsoft Exchange Server ("ProxyLogon")</div>
+          <div class="catalog-note">Pre-auth SSRF chained with post-auth RCE by HAFNIUM actors to compromise tens of thousands of corporate Exchange servers.</div>
+        </div>
+
+        <!-- 19. Follina -->
+        <div class="catalog-item" data-query="CVE-2022-30190">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2022-30190</span>
+            <span class="catalog-tag zeroday">Zero-Click Office RCE</span>
+          </div>
+          <div class="catalog-name">Windows Support Diagnostic Tool ("Follina")</div>
+          <div class="catalog-note">Remote code execution via malicious URL protocol handler in Microsoft Word docs even when macros were disabled.</div>
+        </div>
+
+        <!-- 20. Looney Tunables -->
+        <div class="catalog-item" data-query="CVE-2023-4911">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2023-4911</span>
+            <span class="catalog-tag discrepancy">Local Root Escalation</span>
+          </div>
+          <div class="catalog-name">GNU C Library ld.so ("Looney Tunables")</div>
+          <div class="catalog-note">Buffer overflow in GLIBC_TUNABLES processing granting instant local root privileges on default Linux distributions.</div>
+        </div>
+
+        <!-- 21. MadLicence -->
+        <div class="catalog-item" data-query="CVE-2024-38077">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2024-38077</span>
+            <span class="catalog-tag zeroday">Unauthenticated RCE</span>
+          </div>
+          <div class="catalog-name">Windows Remote Desktop Licensing ("MadLicence")</div>
+          <div class="catalog-note">Critical zero-click unauthenticated remote code execution on Windows Server systems running RDL service.</div>
+        </div>
+
+        <!-- 22. EternalBlue -->
+        <div class="catalog-item" data-query="CVE-2017-0144">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2017-0144</span>
+            <span class="catalog-tag discrepancy">Nation-State RCE</span>
+          </div>
+          <div class="catalog-name">Microsoft Windows SMBv1 ("EternalBlue")</div>
+          <div class="catalog-note">Weaponized exploit leaked from NSA equation group; powered the catastrophic WannaCry and NotPetya outbreaks.</div>
+        </div>
+
+        <!-- 23. Heartbleed -->
+        <div class="catalog-item" data-query="CVE-2014-0160">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2014-0160</span>
+            <span class="catalog-tag discrepancy">Memory Disclosure</span>
+          </div>
+          <div class="catalog-name">OpenSSL TLS Heartbeat ("Heartbleed")</div>
+          <div class="catalog-note">Catastrophic memory disclosure flaw allowing remote extraction of private server keys and session tokens.</div>
+        </div>
+
+        <!-- 24. Shitrix -->
+        <div class="catalog-item" data-query="CVE-2019-19781">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2019-19781</span>
+            <span class="catalog-tag discrepancy">Path Traversal RCE</span>
+          </div>
+          <div class="catalog-name">Citrix ADC & Gateway ("Shitrix")</div>
+          <div class="catalog-note">Pre-auth directory traversal allowing arbitrary code execution under nobody account across enterprise perimeters.</div>
+        </div>
+
+        <!-- 25. Synthetic Pre-check Control -->
+        <div class="catalog-item" data-query="CVE-2099-99999">
+          <div class="catalog-item-header">
+            <span class="catalog-cve">CVE-2099-99999</span>
+            <span class="catalog-tag adversarial">Pre-Check Control</span>
+          </div>
+          <div class="catalog-name">Synthetic Non-Existent Identifier</div>
+          <div class="catalog-note">Adversarial test verifying deterministic ~0.3s short-circuit, zero citations, and zero token burn.</div>
+        </div>
+
+      </div>
+
+      <div class="catalog-no-results" id="catalogNoResults">
+        No matching case studies found in dossier index.
+      </div>
+    </div>
+  </div>
+
+  <form class="intake" id="intakeForm">
+    <input type="text" id="queryInput" placeholder="Enter CVE-ID (e.g. CVE-2021-44228) or software name" autocomplete="off">
+    <button type="submit" class="submit-btn" id="runButton">Run check</button>
+  </form>
+
+  <p class="hint" id="hintText">Select a case study from the dossier index above or enter any CVE identifier / package name to cross-check live risk posture.</p>
+
+  <div class="status-line" id="statusLine"></div>
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="report" id="report">
+    <div class="case-id" id="caseId"></div>
+    <h2 id="vulnName"></h2>
+
+    <div class="stamp-row">
+      <span class="stamp" id="severityStamp"></span>
+      <span class="cvss" id="cvssText"></span>
+      <span class="exploit-status" id="exploitStatus"></span>
+    </div>
+
+    <div class="disagreement" id="disagreementBox" style="display:none;">
+      <div class="label">Sources disagree</div>
+      <p id="disagreementText"></p>
+    </div>
+
+    <section class="block">
+      <h3>Executive summary</h3>
+      <p id="execSummary"></p>
+    </section>
+
+    <div class="two-col">
+      <section class="block">
+        <h3>Vendor posture</h3>
+        <p id="vendorPosture"></p>
+      </section>
+      <section class="block">
+        <h3>Threat intelligence</h3>
+        <p id="threatIntel"></p>
+      </section>
+    </div>
+
+    <section class="block">
+      <h3>Recommended action</h3>
+      <p id="recommendedAction"></p>
+    </section>
+
+    <section class="block citations">
+      <h3>Sources</h3>
+      <ol id="citationList"></ol>
+    </section>
+
+    <footer id="timingFooter"></footer>
+  </div>
+
+</div>
+
+<script>
+  // Automatically use relative root if served over HTTP/HTTPS, or localhost:8000 if opened directly as file://
+  const API_BASE = window.location.origin.startsWith('http') ? '' : 'http://localhost:8000';
+
+  const form = document.getElementById('intakeForm');
+  const input = document.getElementById('queryInput');
+  const button = document.getElementById('runButton');
+  const statusLine = document.getElementById('statusLine');
+  const errorBox = document.getElementById('errorBox');
+  const report = document.getElementById('report');
+  const hintText = document.getElementById('hintText');
+
+  const catalogToggle = document.getElementById('catalogToggle');
+  const catalogMenu = document.getElementById('catalogMenu');
+  const catalogFilterInput = document.getElementById('catalogFilterInput');
+  const catalogCountLabel = document.getElementById('catalogCountLabel');
+  const catalogItems = Array.from(document.querySelectorAll('.catalog-item'));
+  const catalogNoResults = document.getElementById('catalogNoResults');
+
+  // Toggle dropdown
+  catalogToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = catalogMenu.classList.toggle('open');
+    catalogToggle.classList.toggle('open', isOpen);
+    catalogToggle.setAttribute('aria-expanded', isOpen);
+    if (isOpen) {
+      setTimeout(() => catalogFilterInput.focus(), 60);
+    }
+  });
+
+  // Filter functionality
+  catalogFilterInput.addEventListener('input', () => {
+    const term = catalogFilterInput.value.toLowerCase().trim();
+    let visibleCount = 0;
+    catalogItems.forEach(item => {
+      const text = (item.getAttribute('data-query') + ' ' + item.textContent).toLowerCase();
+      if (!term || text.includes(term)) {
+        item.style.display = '';
+        visibleCount++;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+    catalogCountLabel.textContent = `Showing ${visibleCount} of ${catalogItems.length}`;
+    catalogNoResults.style.display = visibleCount === 0 ? 'block' : 'none';
+  });
+
+  // Close catalog on click outside
+  document.addEventListener('click', (e) => {
+    if (!catalogToggle.contains(e.target) && !catalogMenu.contains(e.target)) {
+      catalogMenu.classList.remove('open');
+      catalogToggle.classList.remove('open');
+      catalogToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && catalogMenu.classList.contains('open')) {
+      catalogMenu.classList.remove('open');
+      catalogToggle.classList.remove('open');
+      catalogToggle.setAttribute('aria-expanded', 'false');
+      catalogToggle.focus();
+    }
+  });
+
+  // Item selection & auto-run
+  catalogItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const q = item.getAttribute('data-query');
+      input.value = q;
+      catalogMenu.classList.remove('open');
+      catalogToggle.classList.remove('open');
+      catalogToggle.setAttribute('aria-expanded', 'false');
+      form.dispatchEvent(new Event('submit'));
+    });
+  });
+
+  const severityLabels = {
+    CRITICAL: 'critical', HIGH: 'high', MEDIUM: 'medium', LOW: 'low', UNKNOWN: 'unknown'
+  };
+
+  const exploitLabels = {
+    ACTIVELY_EXPLOITED: 'actively exploited',
+    POC_PUBLIC: 'proof-of-concept public',
+    SUSPECTED: 'exploitation suspected',
+    NO_EVIDENCE_OF_EXPLOITATION: 'no evidence of exploitation'
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const query = input.value.trim();
+    if (!query) return;
+
+    button.disabled = true;
+    hintText.style.display = 'none';
+    errorBox.classList.remove('visible');
+    report.classList.remove('visible');
+    statusLine.textContent = 'Checking advisories and news…';
+
+    try {
+      const res = await fetch(`${API_BASE}/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.detail || `Request failed (${res.status})`);
+      }
+
+      statusLine.textContent = '';
+      renderReport(data);
+
+    } catch (err) {
+      statusLine.textContent = '';
+      errorBox.textContent = `Couldn't complete the check: ${err.message}`;
+      errorBox.classList.add('visible');
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  function renderReport(data) {
+    const r = data.report;
+
+    document.getElementById('caseId').textContent = r.cve_id;
+    document.getElementById('vulnName').textContent = r.vulnerability_name;
+
+    const stamp = document.getElementById('severityStamp');
+    stamp.textContent = severityLabels[r.severity] || (r.severity ? r.severity.toLowerCase() : 'unknown');
+    stamp.className = 'stamp ' + (r.severity || 'unknown').toLowerCase();
+
+    document.getElementById('cvssText').textContent =
+      r.cvss_score != null ? `CVSS ${r.cvss_score.toFixed(1)}` : 'CVSS not available';
+
+    document.getElementById('exploitStatus').textContent =
+      exploitLabels[r.exploitation_status] || r.exploitation_status;
+
+    const disBox = document.getElementById('disagreementBox');
+    if (r.has_source_disagreement) {
+      disBox.style.display = 'block';
+      document.getElementById('disagreementText').textContent = r.disagreement_details || '';
+    } else {
+      disBox.style.display = 'none';
+    }
+
+    document.getElementById('execSummary').textContent = r.executive_summary;
+    document.getElementById('vendorPosture').textContent = r.vendor_posture;
+    document.getElementById('threatIntel').textContent = r.threat_intelligence;
+    document.getElementById('recommendedAction').textContent = r.recommended_action;
+
+    const list = document.getElementById('citationList');
+    list.innerHTML = '';
+    const citations = r.citations || [];
+    if (citations.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = 'No external citations found.';
+      li.style.color = 'var(--ink-soft)';
+      list.appendChild(li);
+    } else {
+      citations.forEach(c => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="${c.url}" target="_blank" rel="noopener">${c.title}</a>` +
+          (c.snippet_evidence ? `<div class="evidence">${c.snippet_evidence}</div>` : '');
+        list.appendChild(li);
+      });
+    }
+
+    const fetchSec = data.fetch_seconds != null ? data.fetch_seconds : '—';
+    const synthSec = data.synthesis_seconds != null ? data.synthesis_seconds : '—';
+    const totalSec = data.elapsed_seconds != null ? data.elapsed_seconds : '—';
+
+    document.getElementById('timingFooter').textContent =
+      `fetched in ${fetchSec}s · synthesized in ${synthSec}s · total ${totalSec}s`;
+
+    report.classList.add('visible');
+  }
+</script>
+</body>
+</html>

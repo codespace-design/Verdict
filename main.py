@@ -9,6 +9,7 @@ import time
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from fetch import fetch_vulnerability_data, SerpApiFetchError
 from synthesize import (
@@ -129,6 +130,10 @@ def analyze(request: AnalyzeRequest):
         report=report,
         fetch_warnings=fetch_data.get("errors", []),
     )
+ 
+ 
+# Mount static files to serve the dossier frontend UI directly at /
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
  
  
 if __name__ == "__main__":
