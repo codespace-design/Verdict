@@ -2,6 +2,19 @@
  * Verdict - Autonomous Security Intelligence Frontend Controller
  */
 
+// ============================================================
+// Theme initialisation — runs before DOMContentLoaded to
+// prevent a flash of the wrong theme.
+// ============================================================
+(function () {
+  const stored = localStorage.getItem('verdict-theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = stored || (prefersDark ? 'dark' : 'light');
+  if (theme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+
 // Automatically use relative root if served over HTTP/HTTPS, or localhost:8000 if opened directly as file://
 const API_BASE = window.location.origin.startsWith('http') ? '' : 'http://localhost:8000';
 
@@ -35,6 +48,28 @@ document.addEventListener('DOMContentLoaded', () => {
   // Action Buttons & Toast
   const copyMarkdownBtn = document.getElementById('copyMarkdownBtn');
   const toast = document.getElementById('toast');
+
+  // Theme Toggle
+  const themeToggle = document.getElementById('themeToggle');
+  const themeToggleLabel = document.getElementById('themeToggleLabel');
+
+  // Sync toggle label with current theme on load
+  function syncThemeLabel() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (themeToggleLabel) themeToggleLabel.textContent = isDark ? 'Dark' : 'Light';
+    if (themeToggle) themeToggle.setAttribute('aria-pressed', String(isDark));
+  }
+  syncThemeLabel();
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const next = isDark ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('verdict-theme', next);
+      syncThemeLabel();
+    });
+  }
 
   let activeCategory = 'all';
   let focusedIndex = -1;

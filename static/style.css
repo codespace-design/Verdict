@@ -1,6 +1,7 @@
 /* Verdict - Editorial Security Intelligence Design System */
 
 :root {
+  /* Light Mode (Default) */
   --paper: #EAE7DE;
   --paper-raised: #F2F0E8;
   --paper-sunken: #E2DFD4;
@@ -21,6 +22,47 @@
   --amber-border: rgba(150, 101, 15, 0.28);
   --radius-sm: 3px;
   --radius-md: 4px;
+
+  /* Toggle Track Colors */
+  --toggle-track-bg: #C9C2AF;
+  --toggle-thumb-bg: #F2F0E8;
+  --toggle-thumb-shadow: rgba(33, 30, 26, 0.25);
+}
+
+/* Dark Mode Overrides */
+[data-theme="dark"] {
+  --paper: #161412;
+  --paper-raised: #1E1B18;
+  --paper-sunken: #110F0D;
+  --paper-hover: #252018;
+  --ink: #E8E4DA;
+  --ink-soft: #9E9888;
+  --ink-faint: #6A6458;
+  --rule: #332E28;
+  --rule-light: #2A2520;
+  --oxblood: #C9716A;
+  --oxblood-bg: rgba(201, 113, 106, 0.08);
+  --oxblood-border: rgba(201, 113, 106, 0.25);
+  --moss: #7DBF84;
+  --moss-bg: rgba(125, 191, 132, 0.08);
+  --moss-border: rgba(125, 191, 132, 0.25);
+  --amber: #D4A050;
+  --amber-bg: rgba(212, 160, 80, 0.08);
+  --amber-border: rgba(212, 160, 80, 0.25);
+
+  /* Toggle Track Colors */
+  --toggle-track-bg: #3A3530;
+  --toggle-thumb-bg: #E8E4DA;
+  --toggle-thumb-shadow: rgba(0, 0, 0, 0.5);
+}
+
+/* Smooth theme transitions */
+body, .catalog-menu, .catalog-filter-bar, .info-card, .toast,
+.action-btn, .catalog-toggle, .intake-input, .catalog-filter-input,
+.catalog-tab, .catalog-item, .submit-btn, footer.site-footer,
+.step-number, .catalog-pill {
+  transition: background-color 0.28s ease, color 0.28s ease,
+              border-color 0.28s ease, box-shadow 0.28s ease;
 }
 
 * {
@@ -51,7 +93,7 @@ header {
 .header-top {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   margin-bottom: 6px;
 }
 
@@ -880,4 +922,114 @@ footer.site-footer a {
 footer.site-footer a:hover {
   color: var(--ink);
   border-bottom-color: var(--ink);
+}
+
+/* ==========================================================================
+   Dark / Light Mode Toggle Button
+   ========================================================================== */
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  padding: 5px 10px 5px 7px;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.03em;
+  transition: background 0.2s ease, border-color 0.2s ease,
+              color 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  background: var(--paper-hover);
+  border-color: var(--ink-faint);
+  color: var(--ink-soft);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* The sliding pill track */
+.theme-toggle-track {
+  position: relative;
+  width: 34px;
+  height: 18px;
+  background: var(--toggle-track-bg);
+  border-radius: 100px;
+  transition: background 0.28s ease;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .theme-toggle-track {
+  background: #4A6FA5;
+}
+
+/* The sliding thumb */
+.theme-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: var(--toggle-thumb-bg);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px var(--toggle-thumb-shadow);
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background 0.28s ease, box-shadow 0.28s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .theme-toggle-thumb {
+  transform: translateX(16px);
+}
+
+/* Sun & Moon icon layers inside the thumb */
+.theme-toggle-icon {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  transition: opacity 0.22s ease, transform 0.28s ease;
+}
+
+.icon-sun {
+  color: #96650F;
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.icon-moon {
+  color: #4A6FA5;
+  opacity: 0;
+  transform: rotate(-45deg) scale(0.6);
+}
+
+[data-theme="dark"] .icon-sun {
+  opacity: 0;
+  transform: rotate(45deg) scale(0.6);
+}
+
+[data-theme="dark"] .icon-moon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* Label text in toggle */
+.theme-toggle-label {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  transition: opacity 0.2s ease;
 }
